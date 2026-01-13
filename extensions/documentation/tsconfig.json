@@ -12,10 +12,6 @@
     "sourceMap": false,
     "skipLibCheck": true
   },
-    "exclude": [
-      "node_modules"
-    ],
-  "files": [
-    "src/index.tsx",
-  ]
+  "exclude": ["node_modules"],
+  "files": ["src/index.tsx"]
 }

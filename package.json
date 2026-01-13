@@ -70,8 +70,8 @@
     "docs": "yarn api-extractor run --local",
     "lint": "yarn eslint .",
     "lint:quiet": "yarn eslint . --quiet",
-    "format": "yarn prettier src --write",
-    "format:check": "yarn prettier src --check"
+    "format": "yarn prettier \"{src,extensions,api,tools,samples}/**/*.{ts,tsx,js,jsx,scss,css,md,json}\" --write",
+    "format:check": "yarn prettier \"{src,extensions,api,tools,samples}/**/*.{ts,tsx,js,jsx,scss,css,md,json}\" --check"
   },
   "jest": {
     "testEnvironment": "jsdom",

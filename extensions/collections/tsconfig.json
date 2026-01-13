@@ -13,10 +13,6 @@
     "sourceMap": true,
     "skipLibCheck": true
   },
-    "exclude": [
-      "node_modules"
-    ],
-  "files": [
-    "src/index.ts"
-  ]
+  "exclude": ["node_modules"],
+  "files": ["src/index.ts"]
 }

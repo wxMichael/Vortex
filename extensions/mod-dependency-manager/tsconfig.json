@@ -13,11 +13,6 @@
     "skipLibCheck": true,
     "esModuleInterop": true
   },
-    "exclude": [
-      "node_modules"
-    ],
-  "files": [
-    "typings.custom/index.d.ts",
-    "src/index.tsx"
-  ]
+  "exclude": ["node_modules"],
+  "files": ["typings.custom/index.d.ts", "src/index.tsx"]
 }
