@@ -8,7 +8,7 @@ import { IConflict } from "./types/IConflict";
 import { IModLookupInfo } from "./types/IModLookupInfo";
 import determineConflicts from "./util/conflicts";
 import DependenciesFilter from "./util/DependenciesFilter";
-import { findRuleBiDir } from "./util/findRule";
+import { findRuleBiDir, isConflictResolved } from "./util/findRule";
 import renderModLookup from "./util/renderModLookup";
 import ruleFulfilled from "./util/ruleFulfilled";
 import showUnsolvedConflictsDialog from "./util/showUnsolvedConflicts";
@@ -159,6 +159,9 @@ function updateMetaRules(
     ) {
       return;
     }
+    // Include the mod id so that testModReference can match this reference
+    // back to its mod even when file-based attributes are incomplete
+    ref.id = modId;
     rules = rules.concat(mapRules(ref, mod.rules));
     let downloadGame = mod.attributes["downloadGame"] || gameId;
     if (Array.isArray(downloadGame)) {
@@ -518,7 +521,8 @@ async function updateConflictInfo(
         return false;
       }
       encountered.add(encKey);
-      return findRuleBiDir(dependencyState.modRules, mods[modId], conflict.otherMod) === undefined;
+      return !isConflictResolved(mods, modId, conflict.otherMod)
+        && findRuleBiDir(dependencyState.modRules, mods[modId], conflict.otherMod) === undefined;
     });
 
     if (filtered.length !== 0) {
