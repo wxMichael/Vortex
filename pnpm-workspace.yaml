@@ -12,6 +12,7 @@ onlyBuiltDependencies:
   - diskusage
   - drivelist
   - electron
+  - fomod-installer-native
   - leveldown
   - native-errors
   - vortexmt
