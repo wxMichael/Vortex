@@ -252,7 +252,7 @@ async function main(args) {
   const buildDir = args._[0];
   const buildType = path.basename(buildDir);
 
-  process.env.TARGET_ENV = buildType === "app" ? "production" : "development";
+  process.env.TARGET_ENV = buildType === "dist" ? "production" : "development";
 
   const buildStateName = `./BuildState_${buildType}.json`;
   let buildState;
@@ -263,28 +263,12 @@ async function main(args) {
     buildState = {};
   }
 
-  const parallel = true;
-  const concurrency = 10;
-  const limit = pLimit(concurrency);
+  const limit = pLimit(process.env.NO_PARALLEL ? 1 : 10);
+  const promises = projectGroups.map((project) =>
+    limit(() => work(project, buildType, buildDir, buildState, buildStateName)),
+  );
 
-  if (parallel) {
-    const promises = projectGroups.map((project) =>
-      limit(() =>
-        work(project, buildType, buildDir, buildState, buildStateName),
-      ),
-    );
-    await Promise.all(promises);
-  } else {
-    for (const project of projectGroups) {
-      const projectFailed = await work(
-        project,
-        buildType,
-        buildDir,
-        buildState,
-        buildStateName,
-      );
-    }
-  }
+  await Promise.all(promises);
 }
 
 const args = parseArgs(process.argv.slice(2));
