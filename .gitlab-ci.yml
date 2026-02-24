@@ -45,8 +45,7 @@ build:linux:
       curl https://get.volta.sh | bash -s -- --skip-setup
       volta install node yarn
       npm install --global corepack@latest
-      corepack enable
-      corepack prepare pnpm@latest --activate
+      corepack install
 
       # Print environment information
       echo "=== Environment Version Information ==="
@@ -79,8 +78,7 @@ build:windows:
     # Install Node and Yarn via Volta (reads versions from package.json)
     - volta install node yarn
     - npm install --global corepack@latest
-    - corepack enable
-    - corepack prepare pnpm@latest --activate
+    - corepack install
 
     # Configure node-gyp to use VS 2022
     - $env:npm_config_msvs_version = "2022"
@@ -123,8 +121,7 @@ dist:linux:
       curl https://get.volta.sh | bash -s -- --skip-setup
       volta install node yarn
       npm install --global corepack@latest
-      corepack enable
-      corepack prepare pnpm@latest --activate
+      corepack install
 
 dist:windows:
   extends: .dist_template
@@ -138,8 +135,7 @@ dist:windows:
   before_script:
     - volta install node yarn
     - npm install --global corepack@latest
-    - corepack enable
-    - corepack prepare pnpm@latest --activate
+    - corepack install
     - $env:npm_config_msvs_version = "2022"
     - $env:GYP_MSVS_VERSION = "2022"
     - git config --global --add safe.directory $CI_PROJECT_DIR
