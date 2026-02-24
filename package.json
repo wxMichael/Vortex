@@ -17,6 +17,7 @@
     "build:fomod": "node ./preinstall.js",
     "start": "pnpm -F @vortex/main run start",
     "build": "pnpm -r run build",
+    "dist": "pnpm -r run dist",
     "assets:out": "node ./InstallAssets.mjs ./src/main/out && pnpm sass --style compressed ./src/stylesheets/loadingScreen.scss ./src/main/out/assets/css/loadingScreen.css && pnpm tailwindcss -i ./src/stylesheets/tailwind-v4.css -o ./src/main/out/assets/css/tailwind-v4.css -m",
     "typecheck": "pnpm -r run typecheck",
     "test": "pnpm -r run test",
@@ -40,14 +41,20 @@
     "eslint-config-prettier": "10.1.8",
     "eslint-plugin-better-tailwindcss": "^4.0.2",
     "eslint-plugin-perfectionist": "^5.4.0",
+    "fork-ts-checker-webpack-plugin": "^9.0.2",
     "glob": "^13.0.6",
     "globals": "^17.3.0",
     "prettier": "3.6.2",
     "pretty-quick": "^4.2.2",
     "sass": "1.97.3",
     "tailwindcss": "4.1.17",
+    "terser-webpack-plugin": "^5.3.10",
+    "ts-loader": "^9.5.1",
     "typescript": "^5.0.0",
-    "typescript-eslint": "8.47.0"
+    "typescript-eslint": "8.47.0",
+    "webpack": "^5.94.0",
+    "webpack-cli": "^5.1.4",
+    "webpack-node-externals": "^3.0.0"
   },
   "pnpm": {
     "overrides": {
