@@ -1,12 +1,12 @@
 !include WinVer.nsh
- 
+!addplugindir "${BUILD_RESOURCES_DIR}/nsis"
 !macro preInit
   ${IfNot} ${AtLeastWin10}
 
     MessageBox MB_ABORTRETRYIGNORE  "Vortex 1.8 and above is not compatible with your operating system.$\r$\n\
-Windows 10 or newer is required to run correctly.$\r$\n\
-Click $\"Retry$\" for troubleshooting steps (opens in browser).$\r$\n\
-Click $\"Ignore$\" to continue anyway." IDRETRY exit IDIGNORE ignore
+    Windows 10 or newer is required to run correctly.$\r$\n\
+    Click $\"Retry$\" for troubleshooting steps (opens in browser).$\r$\n\
+    Click $\"Ignore$\" to continue anyway." IDRETRY exit IDIGNORE ignore
   Quit
 exit:
   ExecShell open "https://forums.nexusmods.com/index.php?/topic/12870396-windows-7881-vortex-will-not-start-up/"
@@ -18,24 +18,14 @@ ignore:
 !macroend
 
 !macro customInstall
-  SetRegView 64
+  SetOutPath "$TEMP"
+  File "${BUILD_RESOURCES_DIR}\VC_redist.x64.exe"
+  File "${BUILD_RESOURCES_DIR}\windowsdesktop-runtime-win-x64.exe"
+  ExecWait '"$TEMP\\VC_redist.x64.exe" /quiet /norestart'
+  ExecWait '"$TEMP\\windowsdesktop-runtime-win-x64.exe" /install /quiet /norestart'
 
-  ReadRegDWORD $1 HKLM "SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x64" "Installed"
-
-  ${DisableX64FSRedirection}
-  IfFileExists "$SYSDIR\vcruntime140.dll" 0 Missing
-  IfFileExists "$SYSDIR\vcruntime140_1.dll" Present Missing
-
-  Missing:
-  StrCpy $1 "0"
-
-  Present:
-  ${EnableX64FSRedirection}
-
-  ${If} $1 != "1"
-    File /oname=$PLUGINSDIR\vc_redist.x64.exe "${BUILD_RESOURCES_DIR}\vc_redist.x64.exe"
-    ExecWait '"$PLUGINSDIR\vc_redist.x64.exe" /passive /norestart'
-  ${EndIf}
+  ; Grant permissions to FOMOD installer directories for AppContainer sandboxing
+  ; SIDs: (S-1-15-2-1) = ALL_APP_PACKAGES, (S-1-15-2-2) = ALL_RESTRICTED_APP_PACKAGES
 
   ; Native FOMOD installer
   AccessControl::GrantOnFile \
@@ -73,7 +63,6 @@ ignore:
 
   ; Add Windows Defender exclusion for Vortex installation folder (silent)
   nsExec::ExecToLog 'powershell -WindowStyle Hidden -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command "try { Add-MpPreference -ExclusionPath \"$INSTDIR\" -ErrorAction SilentlyContinue } catch { }"'
-
 !macroend
 
 !macro customUnInstall
