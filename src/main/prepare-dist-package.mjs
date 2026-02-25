@@ -45,9 +45,11 @@ async function createMinimalPackageJson() {
 
   const minimal = {
     name: "Vortex",
-    version: "1.0.0",
+    version: "2.0.0",
     main: "main.js",
     author: "Black Tree Gaming Ltd.",
+    description:
+      "The elegant, powerful, and open-source mod manager from Nexus Mods",
     license: "GPL-3.0",
     type: mainPkg.type,
     pnpm: rootPkg.pnpm,

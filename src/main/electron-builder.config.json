@@ -3,11 +3,13 @@
   "appId": "com.nexusmods.vortex",
   "includeSubNodeModules": false,
   "directories": {
+    "buildResources": "./nsis",
     "app": "./dist",
     "output": "../../dist"
   },
   "win": {
     "target": "nsis",
+    "icon": "nsis/icon.ico",
     "publish": [
       {
         "provider": "github",
@@ -29,7 +31,9 @@
     "allowToChangeInstallationDirectory": true,
     "uninstallDisplayName": "${productName}",
     "include": "./nsis/installer.nsh",
-    "artifactName": "vortex-setup-${version}.${ext}"
+    "artifactName": "vortex-setup-${version}.${ext}",
+    "installerIcon": "nsis/icon.ico",
+    "installerHeaderIcon": "nsis/icon.ico"
   },
   "linux": {
     "target": ["zip"],
@@ -43,7 +47,7 @@
   "extraResources": [
     "./build/VC_redist.x64.exe",
     "./build/windowsdesktop-runtime-win-x64.exe",
-    "./nsis",
+    "./nsis/**/*",
     "../../locales"
   ],
   "files": ["**/*"],
