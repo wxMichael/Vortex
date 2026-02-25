@@ -1,4 +1,5 @@
 !include WinVer.nsh
+!addplugindir "${BUILD_RESOURCES_DIR}/nsis"
 !macro preInit
   ${IfNot} ${AtLeastWin10}
 
