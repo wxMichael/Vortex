@@ -9,7 +9,8 @@ import type { INotification } from "../../types/INotification";
 import type { IState } from "../../types/IState";
 import getVortexPath from "../../util/getVortexPath";
 import { log } from "../../util/log";
-import { IPrettifiedError, showError } from "../../util/message";
+import type { IPrettifiedError } from "../../util/message";
+import { showError } from "../../util/message";
 import { getSafe } from "../../util/storeHelper";
 import {
   ModsInstallationCancelledEvent,
