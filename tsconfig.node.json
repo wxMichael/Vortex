@@ -6,7 +6,8 @@
     "./InstallAssets.mjs",
     "./ts-to-zod.config.mjs",
     "./eslint.config.mjs",
-    "./eslint-rules/*.mjs"
+    "./eslint-rules/*.mjs",
+    "./src/main/prepare-dist-package.mjs"
   ],
   "compilerOptions": {
     "composite": true,

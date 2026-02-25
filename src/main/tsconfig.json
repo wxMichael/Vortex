@@ -7,6 +7,7 @@
     "../../typings.custom/electron.d.ts",
     "../../typings.custom/promise.d.ts"
   ],
+  "exclude": ["./*.js", "./*.mjs", "./*.cjs", "./dist", "./out"],
   "compilerOptions": {
     "composite": true,
     "target": "esnext",
