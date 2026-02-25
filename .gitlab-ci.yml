@@ -10,6 +10,8 @@ variables:
 # - Every commit to any branch (unless an MR is already open for that branch, to avoid duplicates)
 # - Manual web triggers
 workflow:
+  auto_cancel:
+    on_new_commit: interruptible
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS
