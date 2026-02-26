@@ -10,4 +10,5 @@ export default defineConfig({
     sourcemap: true,
   },
   exports: true,
+  platform: "neutral",
 });

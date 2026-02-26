@@ -152,6 +152,75 @@ export default defineConfig([
   },
 
   {
+    name: "Shared package - no platform-specific imports",
+    files: ["src/shared/src/**/*.{ts,js,mjs,cjs}"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              regex: "^node:",
+              message:
+                "Node.js built-ins are not allowed in the shared package. This package must be platform-agnostic.",
+            },
+            {
+              regex: "^electron(/|$)",
+              message:
+                "Electron is not allowed in the shared package. This package must be platform-agnostic.",
+            },
+          ],
+          paths: [
+            // Node.js built-in modules (legacy imports without 'node:' prefix)
+            ...[
+              "assert",
+              "async_hooks",
+              "buffer",
+              "child_process",
+              "cluster",
+              "crypto",
+              "dgram",
+              "diagnostics_channel",
+              "dns",
+              "domain",
+              "events",
+              "fs",
+              "http",
+              "http2",
+              "https",
+              "inspector",
+              "module",
+              "net",
+              "os",
+              "path",
+              "perf_hooks",
+              "process",
+              "querystring",
+              "readline",
+              "repl",
+              "stream",
+              "string_decoder",
+              "timers",
+              "tls",
+              "tty",
+              "url",
+              "util",
+              "v8",
+              "vm",
+              "wasi",
+              "worker_threads",
+              "zlib",
+            ].map((name) => ({
+              name,
+              message: `'${name}' is a Node.js built-in and is not allowed in the shared package. This package must be platform-agnostic.`,
+            })),
+          ],
+        },
+      ],
+    },
+  },
+
+  {
     // NOTE(erri120): This legacy config only exists "temporarily" (we'll see how true that holds)
     name: "Vortex legacy config",
     rules: {
