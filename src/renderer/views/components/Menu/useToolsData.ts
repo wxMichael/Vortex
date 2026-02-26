@@ -1,7 +1,4 @@
-import {
-  getErrorMessageOrDefault,
-  unknownToError,
-} from "@vortex/shared";
+import { getErrorMessageOrDefault, unknownToError } from "@vortex/shared";
 import { useMemo } from "react";
 import { shallowEqual, useSelector } from "react-redux";
 

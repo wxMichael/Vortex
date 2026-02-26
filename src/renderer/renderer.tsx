@@ -60,7 +60,11 @@ import type crashDumpT from "crash-dump";
 import type * as I18next from "i18next";
 
 import "./util/application.electron";
-import { getErrorCode, getErrorMessageOrDefault, ApplicationData } from "@vortex/shared";
+import {
+  getErrorCode,
+  getErrorMessageOrDefault,
+  ApplicationData,
+} from "@vortex/shared";
 import Bluebird from "bluebird";
 import { ipcRenderer, webFrame } from "electron";
 import { EventEmitter } from "events";
@@ -110,7 +114,7 @@ import StyleManager from "./StyleManager";
 import { relaunch } from "./util/commandLine";
 import { UserCanceled } from "./util/CustomErrors";
 import { setOutdated, terminate, toError } from "./util/errorHandling";
-import { } from "./util/extensionRequire";
+import {} from "./util/extensionRequire";
 import { setTFunction } from "./util/fs";
 import getVortexPath, { setVortexPath } from "./util/getVortexPath";
 import GlobalNotifications from "./util/GlobalNotifications";
@@ -332,7 +336,7 @@ function errorHandler(evt: any) {
   if (
     error.message === "Cannot read property 'parentNode' of undefined" ||
     error.message ===
-    "Cannot read properties of undefined (reading 'parentNode')"
+      "Cannot read properties of undefined (reading 'parentNode')"
   ) {
     // thrown by packery - seemingly at random
     return;

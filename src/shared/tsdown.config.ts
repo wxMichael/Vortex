@@ -9,5 +9,5 @@ export default defineConfig({
   dts: {
     sourcemap: true,
   },
-  exports: true
+  exports: true,
 });
