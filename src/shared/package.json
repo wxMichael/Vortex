@@ -3,8 +3,27 @@
   "name": "@vortex/shared",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
+  "exports": {
+    ".": {
+      "require": "./dist/index.cjs",
+      "import": "./dist/index.mjs",
+      "types": {
+        "require": "./dist/index.d.cts",
+        "import": "./dist/index.d.mts"
+      }
+    },
+    "./*": {
+      "require": "./dist/api/*.cjs",
+      "import": "./dist/api/*.mjs",
+      "types": {
+        "require": "./dist/api/*.d.cts",
+        "import": "./dist/api/*.d.mts"
+      }
+    }
+  },
   "scripts": {
-    "build": "pnpm tsc --composite false -p tsconfig.json",
-    "typecheck": "pnpm tsc --noEmit --composite false -p tsconfig.json"
+    "build": "pnpm tsdown",
+    "typecheck": "pnpm tsc --noEmit -p tsconfig.json"
   }
 }
