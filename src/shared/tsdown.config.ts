@@ -3,11 +3,10 @@ import { defineConfig } from "tsdown";
 export default defineConfig({
   entry: {
     index: "./src/index.ts",
-    "api/*": "./src/api/*.ts"
+    "api/*": "./src/api/*.ts",
   },
   format: ["esm", "commonjs"],
   dts: {
-    sourcemap: true
-  }
-})
-
+    sourcemap: true,
+  },
+});

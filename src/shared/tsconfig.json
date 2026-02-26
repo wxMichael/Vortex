@@ -1,10 +1,7 @@
 {
   "$schema": "https://www.schemastore.org/tsconfig.json",
   "extends": "../../tsconfig.base.json",
-  "include": [
-    "src/**/*",
-    "../../typings.custom/promise.d.ts"
-  ],
+  "include": ["src/**/*", "../../typings.custom/promise.d.ts"],
   "compilerOptions": {
     "target": "esnext",
     "module": "esnext",
@@ -14,8 +11,6 @@
     "composite": true,
     "noEmit": true,
     "types": [],
-    "lib": [
-      "ESNext"
-    ],
+    "lib": ["ESNext"]
   }
 }
