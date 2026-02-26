@@ -25,6 +25,7 @@ export default defineConfig([
     ignores: [
       "./src/main/out",
       "./src/main/dist",
+      "./src/shared/dist",
       "./src/renderer/__tests__",
       "./src/renderer/__mocks__",
       "./extensions",
