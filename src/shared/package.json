@@ -6,24 +6,49 @@
   "type": "module",
   "exports": {
     ".": {
-      "require": "./dist/index.cjs",
       "import": "./dist/index.mjs",
-      "types": {
-        "require": "./dist/index.d.cts",
-        "import": "./dist/index.d.mts"
-      }
+      "require": "./dist/index.cjs"
     },
-    "./*": {
-      "require": "./dist/api/*.cjs",
-      "import": "./dist/api/*.mjs",
-      "types": {
-        "require": "./dist/api/*.d.cts",
-        "import": "./dist/api/*.d.mts"
-      }
-    }
+    "./ipc": {
+      "import": "./dist/ipc.mjs",
+      "require": "./dist/ipc.cjs"
+    },
+    "./preload": {
+      "import": "./dist/preload.mjs",
+      "require": "./dist/preload.cjs"
+    },
+    "./state": {
+      "import": "./dist/state.mjs",
+      "require": "./dist/state.cjs"
+    },
+    "./package.json": "./package.json"
   },
   "scripts": {
     "build": "pnpm tsdown",
     "typecheck": "pnpm tsc --noEmit -p tsconfig.json"
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.cts",
+  "publishConfig": {
+    "exports": {
+      ".": {
+        "import": "./dist/index.mjs",
+        "require": "./dist/index.cjs"
+      },
+      "./ipc": {
+        "import": "./dist/ipc.mjs",
+        "require": "./dist/ipc.cjs"
+      },
+      "./preload": {
+        "import": "./dist/preload.mjs",
+        "require": "./dist/preload.cjs"
+      },
+      "./state": {
+        "import": "./dist/state.mjs",
+        "require": "./dist/state.cjs"
+      },
+      "./package.json": "./package.json"
+    }
   }
 }
