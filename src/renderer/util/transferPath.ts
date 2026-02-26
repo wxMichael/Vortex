@@ -1,11 +1,20 @@
-import { DOWNLOADS_DIR_TAG } from "../extensions/download_management/util/downloadDirectory";
-import { STAGING_DIR_TAG } from "../extensions/mod_management/stagingDirectory";
+import type { IEntry } from "turbowalk";
+
 import {
   getErrorCode,
   isErrorWithSystemCode,
   unknownToError,
-} from "../../shared/errors";
+} from "@vortex/shared";
+import PromiseBB from "bluebird";
+import * as diskusage from "diskusage";
+import * as path from "path";
+import turbowalk from "turbowalk";
+import * as winapi from "winapi-bindings";
 
+import type { Normalize } from "./getNormalizeFunc";
+
+import { DOWNLOADS_DIR_TAG } from "../extensions/download_management/util/downloadDirectory";
+import { STAGING_DIR_TAG } from "../extensions/mod_management/stagingDirectory";
 import {
   CleanupFailedException,
   InsufficientDiskSpace,
@@ -15,17 +24,9 @@ import {
   UserCanceled,
 } from "./CustomErrors";
 import * as fs from "./fs";
-import type { Normalize } from "./getNormalizeFunc";
 import getNormalizeFunc from "./getNormalizeFunc";
 import { log } from "./log";
 import { isChildPath } from "./util";
-
-import PromiseBB from "bluebird";
-import * as diskusage from "diskusage";
-import * as path from "path";
-import type { IEntry } from "turbowalk";
-import turbowalk from "turbowalk";
-import * as winapi from "winapi-bindings";
 
 const MIN_DISK_SPACE_OFFSET = 512 * 1024 * 1024;
 
@@ -99,8 +100,8 @@ export function testPathTransfer(
     .then((res) =>
       res
         ? PromiseBB.reject(
-            new ProcessCanceled("Disk space calculations are unnecessary."),
-          )
+          new ProcessCanceled("Disk space calculations are unnecessary."),
+        )
         : calculate(source),
     )
     .then((totalSize) => {
@@ -211,84 +212,84 @@ export function transferPath(
           copyPromise = isCancelled
             ? PromiseBB.resolve()
             : copyPromise
-                .then(() =>
-                  PromiseBB.each(directories.sort(longestFirst), (entry) => {
-                    if (moveDown && isChildPath(dest, entry.filePath)) {
-                      // this catches the case where we transfer .../mods to .../mods/foo/bar
-                      // and we come across the path .../mods/foo. Wouldn't want to try to remove
-                      // that, do we?
-                      return PromiseBB.resolve();
-                    }
-                    removableDirectories.push(entry.filePath);
-                    const destPath = path.join(
-                      dest,
-                      path.relative(source, entry.filePath),
-                    );
-                    return isCancelled
-                      ? PromiseBB.reject(new UserCanceled())
-                      : fs
-                          .ensureDirWritableAsync(destPath)
-                          .catch((err) =>
-                            getErrorCode(err) === "EEXIST"
-                              ? PromiseBB.resolve()
-                              : PromiseBB.reject(err),
-                          );
-                  }).then(() => {}),
-                )
-                .then(() =>
-                  PromiseBB.map(files, (entry) => {
-                    const sourcePath = entry.filePath;
-                    const destPath = path.join(
-                      dest,
-                      path.relative(source, entry.filePath),
-                    );
+              .then(() =>
+                PromiseBB.each(directories.sort(longestFirst), (entry) => {
+                  if (moveDown && isChildPath(dest, entry.filePath)) {
+                    // this catches the case where we transfer .../mods to .../mods/foo/bar
+                    // and we come across the path .../mods/foo. Wouldn't want to try to remove
+                    // that, do we?
+                    return PromiseBB.resolve();
+                  }
+                  removableDirectories.push(entry.filePath);
+                  const destPath = path.join(
+                    dest,
+                    path.relative(source, entry.filePath),
+                  );
+                  return isCancelled
+                    ? PromiseBB.reject(new UserCanceled())
+                    : fs
+                      .ensureDirWritableAsync(destPath)
+                      .catch((err) =>
+                        getErrorCode(err) === "EEXIST"
+                          ? PromiseBB.resolve()
+                          : PromiseBB.reject(err),
+                      );
+                }).then(() => { }),
+              )
+              .then(() =>
+                PromiseBB.map(files, (entry) => {
+                  const sourcePath = entry.filePath;
+                  const destPath = path.join(
+                    dest,
+                    path.relative(source, entry.filePath),
+                  );
 
-                    return func(sourcePath, destPath, { showDialogCallback })
-                      .catch(UserCanceled, () => {
-                        isCancelled = true;
-                        copyPromise = PromiseBB.resolve();
-                      })
-                      .catch((err) => {
-                        // EXDEV implies we tried to rename when source and destination are
-                        //  not in fact on the same volume. This is what comparing the stat.dev
-                        //  was supposed to prevent.
-                        // ENOTSUP implies that we attempted to hardlink a file on a file system
-                        //  which does not support it - copy instead.
-                        // EISDIR is reported in node 12 if hardlinks aren't supported on the drive
-                        //  come on...
-                        const code = getErrorCode(err);
-                        if (
-                          code &&
-                          ["EXDEV", "ENOTSUP", "EISDIR"].indexOf(code) !== -1
-                        ) {
-                          func = fs.copyAsync;
-                          return func(sourcePath, destPath, {
-                            showDialogCallback,
-                          });
-                        } else if (code === "ENOENT") {
-                          return PromiseBB.resolve();
-                        } else {
-                          return PromiseBB.reject(err);
-                        }
-                      })
-                      .then(() => {
-                        ++completed;
-                        const perc = Math.floor((completed * 100) / count);
-                        if (
-                          perc !== lastPerc ||
-                          Date.now() - lastProgress > 1000
-                        ) {
-                          lastPerc = perc;
-                          lastProgress = Date.now();
-                          progress(sourcePath, destPath, perc);
-                        }
-                      });
-                  })
-                    .then(() => {})
+                  return func(sourcePath, destPath, { showDialogCallback })
+                    .catch(UserCanceled, () => {
+                      isCancelled = true;
+                      copyPromise = PromiseBB.resolve();
+                    })
                     .catch((err) => {
-                      exception = unknownToError(err);
-                    }),
-                );
+                      // EXDEV implies we tried to rename when source and destination are
+                      //  not in fact on the same volume. This is what comparing the stat.dev
+                      //  was supposed to prevent.
+                      // ENOTSUP implies that we attempted to hardlink a file on a file system
+                      //  which does not support it - copy instead.
+                      // EISDIR is reported in node 12 if hardlinks aren't supported on the drive
+                      //  come on...
+                      const code = getErrorCode(err);
+                      if (
+                        code &&
+                        ["EXDEV", "ENOTSUP", "EISDIR"].indexOf(code) !== -1
+                      ) {
+                        func = fs.copyAsync;
+                        return func(sourcePath, destPath, {
+                          showDialogCallback,
+                        });
+                      } else if (code === "ENOENT") {
+                        return PromiseBB.resolve();
+                      } else {
+                        return PromiseBB.reject(err);
+                      }
+                    })
+                    .then(() => {
+                      ++completed;
+                      const perc = Math.floor((completed * 100) / count);
+                      if (
+                        perc !== lastPerc ||
+                        Date.now() - lastProgress > 1000
+                      ) {
+                        lastPerc = perc;
+                        lastProgress = Date.now();
+                        progress(sourcePath, destPath, perc);
+                      }
+                    });
+                })
+                  .then(() => { })
+                  .catch((err) => {
+                    exception = unknownToError(err);
+                  }),
+              );
         },
         { details: false, skipHidden: false },
       ),
@@ -304,8 +305,8 @@ export function transferPath(
       const cleanUp = () => {
         return moveDown
           ? removeFolderTags(source).then(() =>
-              removeOldDirectories(removableDirectories),
-            )
+            removeOldDirectories(removableDirectories),
+          )
           : fs.removeAsync(source);
       };
 
@@ -373,12 +374,12 @@ function removeFolderTags(sourceDir: string) {
     return tagFileExists(filePath).then((exists) =>
       exists
         ? fs.removeAsync(filePath).catch((err) => {
-            log("error", "Unable to remove directory tag", err);
-            return getErrorCode(err) === "ENOENT"
-              ? // Tag file is gone ? no problem.
-                PromiseBB.resolve()
-              : PromiseBB.reject(err);
-          })
+          log("error", "Unable to remove directory tag", err);
+          return getErrorCode(err) === "ENOENT"
+            ? // Tag file is gone ? no problem.
+            PromiseBB.resolve()
+            : PromiseBB.reject(err);
+        })
         : PromiseBB.resolve(),
     );
   };
@@ -394,7 +395,7 @@ function removeOldDirectories(directories: string[]): PromiseBB<void> {
     fs.removeAsync(dir).catch((err) => {
       return getErrorCode(err) === "ENOENT"
         ? // Directory missing ? odd but lets keep going.
-          PromiseBB.resolve()
+        PromiseBB.resolve()
         : PromiseBB.reject(err);
     }),
   ).then(() => PromiseBB.resolve());

@@ -3,7 +3,6 @@
   "extends": "../../tsconfig.base.json",
   "include": [
     "**/*",
-    "../shared/**/*",
     "../../typings.custom/*.d.ts",
     "./typings.custom/*.d.ts"
   ],
@@ -19,11 +18,15 @@
   "compilerOptions": {
     "composite": true,
     "target": "esnext",
-    "module": "commonjs", // TODO: change to esnext
-    "moduleResolution": "node", // TODO: change to bundler
+    "module": "node16", // TODO: change to esnext
+    "moduleResolution": "node16", // TODO: change to bundler
     "jsx": "react-jsx",
     "baseUrl": ".",
-    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+    "lib": [
+      "ESNext",
+      "DOM",
+      "DOM.Iterable"
+    ],
     "outDir": "../main/out",
     "rootDir": "..",
     "inlineSourceMap": true,
