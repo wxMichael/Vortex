@@ -24,6 +24,7 @@ if (process.send) {
 
 import { DEBUG_PORT, HTTP_HEADER_SIZE, VORTEX_VERSION } from "@vortex/shared";
 import { app, dialog } from "electron";
+import i18next from "i18next";
 import child_process from "node:child_process";
 import { stat } from "node:fs/promises";
 import path from "node:path";
@@ -246,7 +247,7 @@ async function main(): Promise<void> {
     app.commandLine.appendSwitch("remote-debugging-port", DEBUG_PORT);
   }
 
-  let fixedT = (await import("i18next")).default.default.getFixedT("en");
+  let fixedT = i18next.getFixedT("en");
   try {
     fixedT("dummy");
   } catch {

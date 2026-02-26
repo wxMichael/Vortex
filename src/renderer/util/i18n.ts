@@ -17,7 +17,7 @@ type TFunction = typeof I18next.t;
 let debugging = false;
 let currentLanguage = "en";
 const fallbackTFunc: TFunction = (str) =>
-  (Array.isArray(str) ? str[0].toString() : str.toString());
+  Array.isArray(str) ? str[0].toString() : str.toString();
 
 let actualT: TFunction = fallbackTFunc;
 
@@ -38,7 +38,7 @@ class MultiBackend {
   private static type = "backend";
   private mOptions: any;
   private mServices: any;
-  private mCurrentBackend: any;
+  private mCurrentBackend: FSBackend;
   private mLastReadLanguage: string;
   private mBackendType: BackendType;
 
@@ -51,22 +51,20 @@ class MultiBackend {
     this.mServices = services;
   }
 
-  public read(language: string, namespace: string, callback) {
-    (async () => {
-      const { backendType, extPath } = this.backendType(language);
-      if (
-        backendType !== this.mBackendType ||
-        (backendType === "extension" && language !== this.mLastReadLanguage)
-      ) {
-        this.mCurrentBackend = await this.initBackend(backendType, extPath);
-      }
+  public read(language: string, namespace: string, callback): void {
+    const { backendType, extPath } = this.backendType(language);
+    if (
+      backendType !== this.mBackendType ||
+      (backendType === "extension" && language !== this.mLastReadLanguage)
+    ) {
+      this.mCurrentBackend = this.initBackend(backendType, extPath);
+    }
 
-      this.mLastReadLanguage = language;
-      this.mCurrentBackend.read(language, namespace, callback);
-    })();
+    this.mLastReadLanguage = language;
+    this.mCurrentBackend.read(language, namespace, callback);
   }
 
-  private async initBackend(type: BackendType, extPath: string) {
+  private initBackend(type: BackendType, extPath: string) {
     const res = new FSBackend();
 
     let basePath: string;
@@ -84,7 +82,6 @@ class MultiBackend {
     });
 
     this.mBackendType = type;
-
     return res;
   }
 
